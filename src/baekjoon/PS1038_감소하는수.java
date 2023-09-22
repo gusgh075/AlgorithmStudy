@@ -3,6 +3,8 @@ import java.io.*;
 import java.util.Stack;
 
 public class PS1038_감소하는수 {
+    //1차시도 int로는 결과값이 안담아짐 -> String으로 했어도 됐을듯
+    //2차시도 결과값을 넘어섰을때 -1을 출력하게끔 했어야됨
     public void PS1038_감소하는수() throws IOException {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
