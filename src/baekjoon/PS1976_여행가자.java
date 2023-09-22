@@ -3,8 +3,8 @@ package baekjoon;
 import java.io.*;
 import java.util.Stack;
 
-class Main {
-    public void main(String[] args) throws IOException {
+class PS1976_여행가자 {
+    public void PS1976_여행가자() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
