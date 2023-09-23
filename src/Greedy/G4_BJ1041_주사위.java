@@ -2,6 +2,11 @@ package Greedy;
 
 import java.io.*;
 //48분 1041  주사위
+//처음에는 bruteforce인줄 알았지만 다른 풀이를 보니
+//각 주사위를 반대면과 비교하여 최소값을 구하고
+//1면일시 최소값 1개
+//2면일시 최소값 2개
+//3면일시 최소값 3개를 쓰면 됐다
 class G4_BJ1041_주사위 {
     public static void solution() throws IOException {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
