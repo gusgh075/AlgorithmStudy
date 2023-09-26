@@ -1,6 +1,6 @@
 package Math;
 
-public class n진수게임 {
+public class lv2_n진수게임 {
     public String solution(int n, int t, int m, int p) {
         String answer = "";
         int cur=0;

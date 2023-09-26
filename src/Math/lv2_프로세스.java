@@ -3,7 +3,7 @@ package Math;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class 프로세스 {
+public class lv2_프로세스 {
     public int solution(int[] priorities, int location) {
         int answer = 0;
         Queue<Integer> queue=new LinkedList<>();
