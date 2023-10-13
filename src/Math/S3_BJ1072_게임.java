@@ -1,8 +1,10 @@
+package Math;
+
 import java.io.*;
 
 //S3_BJ1072_게임
-public class Main{
-    public static void main(String[] args)throws IOException{
+public class S3_BJ1072_게임 {
+    public static void sol()throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         String[] s = br.readLine().split(" ");
