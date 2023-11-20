@@ -1,4 +1,4 @@
-package simulation;
+package Simulation;
 
 import java.awt.*;
 import java.io.*;
