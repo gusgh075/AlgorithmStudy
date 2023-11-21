@@ -84,7 +84,7 @@ public class PS1261_알고스팟 {
 
         return 0;
     }
-    public  class Node implements Comparable<Node>{
+    class Node implements Comparable<Node>{
         public int x;
         public int y;
         public int breakWall;
