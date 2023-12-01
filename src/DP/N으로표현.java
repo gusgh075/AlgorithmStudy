@@ -1,6 +1,6 @@
 package DP;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -21,7 +21,7 @@ class N으로표현 {
     public int solution(int N, int number) {
         Set[] DP = new Set[9];
         for (int i = 1; i < DP.length; i++) {
-            DP[i] = new LinkedHashSet<Integer>();
+            DP[i] = new HashSet<Integer>();
             DP[i].add(Integer.parseInt(Integer.toString(N).repeat(i)));
         }
         for (int size = 1; size < 9; size++) {
