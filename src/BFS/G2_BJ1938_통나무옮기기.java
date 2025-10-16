@@ -19,32 +19,35 @@ B를 E로 옮겨야됨
 ! 회전시 3*3범위에 나무가 있어서는 안됨
  */
 public class G2_BJ1938_통나무옮기기 {
-    static int[] dx = new int[]{1, 0, -1, 0, 1, 1, -1, -1};
-    static int[] dy = new int[]{0, 1, 0, -1, 1, -1, -1, 1};
+    static int[] dx = new int[]{1, 0, -1, 0};
+    static int[] dy = new int[]{0, 1, 0, -1};
 
     public static class Log {
         int x;
         int y;
-        boolean isUp;
+        boolean isVertical;
 
-        public Log(int x, int y, boolean isUp) {
+        public Log(int x, int y, boolean isVertical) {
             this.x = x;
             this.y = y;
-            this.isUp = isUp;
+            this.isVertical = isVertical;
         }
 
         @Override
         public boolean equals(Object obj) {
-            if (this.getClass() != obj.getClass()) return false;
-            return
-                    (((Log) obj).x == this.x) &&
-                            (((Log) obj).y == this.y) &&
-                            (((Log) obj).isUp == this.isUp);
+            if (this == obj) return true;
+            if (Log.class != obj.getClass()) return false;
+            Log l = (Log) obj;
+            return l.x == this.x
+                    && l.y == this.y
+                    && l.isVertical == this.isVertical;
+
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(x, y, isUp);
+            //동일 변수값 => 같은 해시값
+            return Objects.hash(x, y, isVertical);
         }
     }
 
@@ -53,122 +56,146 @@ public class G2_BJ1938_통나무옮기기 {
         int cnt;
 
         public Pair(Log log, int cnt) {
-            this.log = new Log(log.x, log.y, log.isUp);
+            this.log = new Log(log.x, log.y, log.isVertical);
             this.cnt = cnt;
         }
     }
 
-    public static boolean canRotate(int[][] map, Log log, int n) {
-        int x = log.x;
-        int y = log.y;
+    /**
+     * 해당 좌표가 지도 안에 있는지
+     * @param map
+     * @param x
+     * @param y
+     * @return
+     */
+    public static boolean inMap(int[][] map, int x, int y) {
+        int n = map.length;
+        return (n > x && n > y && x >= 0 && y >= 0);
+    }
+
+    /**
+     * 통나무가 있는 위치가 가능한 위치인지
+     *
+     * @param map
+     * @param log
+     * @return
+     */
+    public static boolean canMove(int[][] map, Log log) {
+        for (int i = 0; i < 4; i++) {
+            if (log.isVertical) {
+                int ny = log.y + dy[i];
+                if (!inMap(map,log.x,ny)||map[ny][log.x] == 1) return false;
+            } else {
+                int nx = log.x + dx[i];
+                if (!inMap(map,nx,log.y)||map[log.y][nx] == 1) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 통나무가 회전 할 수 있는 위치인지
+     *
+     * @param map
+     * @param log
+     * @return
+     */
+    public static boolean canRotate(int[][] map, Log log) {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                int nx = x + j;
-                int ny = y + i;
-                if (nx < 0 || ny < 0 || nx >= n || ny >= n) return false;
-                if (map[ny][nx] == 1) return false;
+                int nx = log.x + j;
+                int ny = log.y + i;
+                if (!inMap(map,nx,ny)||map[ny][nx] == 1) return false;
             }
         }
         return true;
     }
 
-    public static boolean canMove(int[][] map, Log log) {
-        int x = log.x;
-        int y = log.y;
-        if(x<0||y<0||x>=map.length||y>=map.length) return false;
-        if (log.isUp) {
-            for (int i = -1; i <= 1; i++) {
-                int ny = y + i;
-                if (ny < 0 || ny >= map.length) return false;
-                if (map[ny][x] == 1) return false;
-            }
-        } else {
-            for (int i = -1; i <= 1; i++) {
-                int nx = x + i;
-                if (nx < 0 || nx >= map.length) return false;
-                if (map[y][nx] == 1) return false;
+    /**
+     * 통나무가 EEE에 있는지
+     *
+     * @param map
+     * @param log
+     * @return
+     */
+    public static boolean isEnd(int[][] map, Log log) {
+        for (int i = 0; i < 4; i++) {
+            if (log.isVertical) {
+                int ny = log.y + dy[i];
+                if (!inMap(map,log.x,ny)||map[ny][log.x] != 4) return false;
+            } else {
+                int nx = log.x + dx[i];
+                if (!inMap(map,nx,log.y)||map[log.y][nx] != 4) return false;
             }
         }
-
         return true;
     }
 
-    public static boolean isEnd(int[][] map, Log log, int n) {
-        int x = log.x;
-        int y = log.y;
-        int[] range = {-1, 0, 1};
-        for (int i : range) {
-            int nx = log.isUp ? x : x + i;
-            int ny = log.isUp ? y + i : y;
-            if (nx < 0 || ny < 0 || nx >= n || ny >= n) return false;
-            if (map[ny][nx] != 3) return false;
-        }
-        return true;
+    /**
+     * 통나무를 이동시켜 EEE에 도착할 떄 까지
+     *
+     * @param map
+     * @param log
+     * @return
+     */
+    public static int BFS(int[][] map, Log log) {
+        Queue<Pair> q=new ArrayDeque<>();
+        Set<Log> set=new HashSet<>();
+        q.add(new Pair(log,0));
+        set.add(log);
 
-    }
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        int n = Integer.parseInt(br.readLine());
-        int ans = -1;
-        //map 입력
-        int[][] map = new int[n][n];
-        List<Log> logList = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            String input = br.readLine();
-            for (int j = 0; j < n; j++) {
-                if (input.charAt(j) == 'B') {
-                    map[i][j] = 0;
-                    logList.add(new Log(j, i, true));
-                } else if (input.charAt(j) == 'E') map[i][j] = 3;
-                else map[i][j] = input.charAt(j) - '0';
-            }
-        }
-        //통나무 위치 탐색
-        int tmpX = 0;
-        int tmpY = 0;
-        int tmp = logList.get(0).y;
-        boolean tmpIsUp = false;
-        for (Log log : logList) {
-            if (tmp != log.y) tmpIsUp = true;
-            tmpX += log.x;
-            tmpY += log.y;
-        }
-        Log log = new Log(tmpX / 3, tmpY / 3, tmpIsUp);
-        //이제 통나무 위치를 구하고, map을 그렸다.
-        //이 다음에는 통나무들을 5가지 이동방식에 따라 옮겨야한다.
-        Queue<Pair> q = new ArrayDeque<>();
-        q.add(new Pair(log, 0));
-        Set<Log> hash = new HashSet<>();
-        hash.add(log);
-        while (!q.isEmpty()) {
-            Pair p = q.poll();
-            Log cur = p.log;
-            if (isEnd(map, cur, n)) {
-                ans = p.cnt;
-                break;
-            }
+        while(!q.isEmpty()){
+            Pair cur = q.poll();
+            if(isEnd(map,cur.log)) return cur.cnt;
+            Log curL = cur.log;
+            //상하좌우이동
             for (int i = 0; i < 4; i++) {
-                int nx = cur.x + dx[i];
-                int ny = cur.y + dy[i];
-                Log next = new Log(nx, ny, cur.isUp);
-                if (hash.contains(next)) continue;
-                if (!canMove(map, next)) continue;
-                q.add(new Pair(next, p.cnt + 1));
-                hash.add(next);
+                int nx=curL.x+dx[i];
+                int ny=curL.y+dy[i];
+                Log newL = new Log(nx, ny, curL.isVertical);
+                if(canMove(map,newL)&&!set.contains(newL)){
+                    q.add(new Pair(newL,cur.cnt+1));
+                    set.add(newL);
+                }
             }
-            //회전할때
-            if (canRotate(map, cur, n)) {
-                Log next = new Log(cur.x, cur.y, !cur.isUp);
-                if(!hash.contains(next)) {
-                    q.add(new Pair(next, p.cnt + 1));
-                    hash.add(next);
+            //회전
+            if(canRotate(map,curL)){
+                Log newL=new Log(curL.x,curL.y,!curL.isVertical);
+                if(!set.contains(newL)){
+                    q.add(new Pair(newL,cur.cnt+1));
+                    set.add(newL);
                 }
             }
         }
-        if (ans == -1) bw.write("0");
-        else bw.write(Integer.toString(ans));
-        bw.flush();
+
+        return 0;
+    }
+
+    public static void main(String[] args) throws IOException {
+        //데이터 입력
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int n = Integer.parseInt(br.readLine());
+        int[][] map = new int[n][n];//2차원 배열 => map을 계속 복제하지 않을거기 때문에 메모리상 문제 없음
+        //입력받으며 초기 통나무 위치 설정
+        int sumX = 0;
+        int sumY = 0;
+        boolean isV = true;
+        for (int i = 0; i < n; i++) {
+            //map => 3은 통나무, 4는 둬야 할 위치
+            int[] input = Arrays.stream(br.readLine().replace('B', '3').replace('E', '4').split(""))
+                    .mapToInt(Integer::parseInt).toArray();
+            int cnt=0;
+            for (int j = 0; j < input.length; j++) {
+                if (input[j] == 3) {
+                    sumX += j;
+                    sumY += i;
+                    map[i][j] = 0;
+                    cnt++;//통나무 길이는 3 => 같은 횡 3개 => isV = false
+                } else map[i][j] = input[j];
+            }
+            if(cnt==3) isV=false;
+        }
+        System.out.println(BFS(map, new Log(sumX / 3, sumY / 3, isV)));
     }
 }
