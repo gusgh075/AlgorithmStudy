@@ -10,6 +10,15 @@ import java.util.*;
  * 3.모든 타워를 탐색후 종료
  */
 public class PS2493_탑{
+    public static class Point{
+        int index;
+        int height;
+
+        public Point(int index, int height) {
+            this.index = index;
+            this.height = height;
+        }
+    }
     public void PS2493_탑(String args[]) throws IOException{
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw=new BufferedWriter(new OutputStreamWriter(System.out));
@@ -40,13 +49,4 @@ public class PS2493_탑{
 
     }
 
-}
-class Point{
-    int index;
-    int height;
-
-    public Point(int index, int height) {
-        this.index = index;
-        this.height = height;
-    }
 }
