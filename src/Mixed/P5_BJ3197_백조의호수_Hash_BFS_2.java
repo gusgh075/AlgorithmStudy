@@ -13,7 +13,7 @@ public class P5_BJ3197_백조의호수_Hash_BFS_2 {
     }
 
     public static void birdRoadSpread(int[][] map, Point start, Set<Point> birdWater) {
-        if(map[start.y][start.x]!=2) return;
+        if (map[start.y][start.x] != 2) return;
         Queue<Point> q = new ArrayDeque<>();
         q.add(start);
         int r = map.length;
@@ -24,7 +24,8 @@ public class P5_BJ3197_백조의호수_Hash_BFS_2 {
                 int nx = now.x + dx[i];
                 int ny = now.y + dy[i];
                 if (!isInMap(nx, ny, r, c)) continue;
-                q.add(new Point(nx,ny));
+                if (map[ny][nx] == 2||map[ny][nx]==-1) continue;
+                q.add(new Point(nx, ny));
             }
         }
     }
