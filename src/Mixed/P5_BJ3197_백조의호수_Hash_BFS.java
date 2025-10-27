@@ -19,7 +19,7 @@ import java.util.Queue;
 막힌 부분은 spreadL에서 0인 부분의 인근도 조사를 해야됐는데 2,3에서 시작한다고 단정짓고 함
 결론적으로, 머릿속게 그림을 구체적으로 못그려서 그런듯
  */
-public class P5_BJ3197_백조의호수 {
+public class P5_BJ3197_백조의호수_Hash_BFS {
     static int[] dx = new int[]{1, 0, -1, 0};
     static int[] dy = new int[]{0, 1, 0, -1};
 
