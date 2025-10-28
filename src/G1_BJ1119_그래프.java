@@ -1,18 +1,45 @@
+import java.io.*;
+import java.util.*;
+
 public class G1_BJ1119_그래프 {
-    int[] unf;
-    public static int find(int v){
-        return 0;
+    static int[] unf;
+    static int[] road;
+
+    public static int find(int v) {
+        if (v == unf[v]) return v;
+        return unf[v] = find(unf[v]);
     }
-    public static void union(int a, int b){
 
+    public static void union(int a, int b) {
+        int fa = find(a);
+        int fb = find(b);
+        if (fa != fb) { // 이미 연결된 경우 방지
+            if (fa < fb) {
+                unf[fb] = fa;
+                road[fa] += road[fb];
+            } else {
+                unf[fa] = fb;
+                road[fb] += road[fa];
+            }
+        }
     }
-    public static void main(String[] args) {
 
-        /*일단 유니온파인드 적용.
-        여러개의 그룹이 생성될 것임
-        그룹 내에 몇개의 도로가 있는지 확인
-        n개의 도시가 있는 그룹에는 최소 n-1개의 도로가 존재할 것임
-        그룹 중 n개의 도로가 있는 그룹들을 조사-> n개의 도시가 가질 수 있는 도로 개수는 최소n-1, 최대 n개*/
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+        unf = new int[n];
+        road = new int[n];
+        for (int i = 0; i < n; i++) unf[i] = i;
 
+        for (int i = 0; i < n; i++) {
+            String line = br.readLine().trim();
+            for (int j = 0; j < n; j++) {
+                if (line.charAt(j) == 'Y' && i < j) { // 중복 방지
+                    union(i, j);
+                    road[i]++;
+                    road[j]++;
+                }
+            }
+        }
     }
 }
