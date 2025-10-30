@@ -45,6 +45,7 @@ public class G1_BJ1119_그래프 {
                 }
             }
         }
+        
         for (int i = 0; i < n; i++) {
             int fi = find(unf[i]);
             if(fi==i)continue;
