@@ -56,8 +56,6 @@ public class G1_BJ1119_그래프 {
                 }
             }
         }
-<<<<<<< HEAD
-=======
         Set<Integer> roots = new HashSet<>();
         for (int i = 0; i < n; i++) {
             int fi = find(unf[i]);
@@ -77,6 +75,5 @@ public class G1_BJ1119_그래프 {
 
 //        System.out.println(Arrays.toString(road));
 //        System.out.println(Arrays.toString(unf));
->>>>>>> 백준-그래프
     }
 }
