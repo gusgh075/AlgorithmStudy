@@ -17,9 +17,11 @@ public class G1_BJ1119_그래프 {
             if (fa < fb) {
                 unf[fb] = fa;
                 road[fa] += road[fb];
+                road[fb]=0;
             } else {
                 unf[fa] = fb;
                 road[fb] += road[fa];
+                road[fa]=0;
             }
         }
     }
@@ -29,17 +31,25 @@ public class G1_BJ1119_그래프 {
         int n = Integer.parseInt(br.readLine());
         unf = new int[n];
         road = new int[n];
+        int roadSum=0;
+        HashSet<Integer> root=new HashSet<>();
         for (int i = 0; i < n; i++) unf[i] = i;
 
         for (int i = 0; i < n; i++) {
             String line = br.readLine().trim();
             for (int j = 0; j < n; j++) {
                 if (line.charAt(j) == 'Y' && i < j) { // 중복 방지
+                    road[i]++;  //낮은 숫자의 도시에 road ++;
+                    roadSum++;
                     union(i, j);
-                    road[i]++;
-                    road[j]++;
                 }
             }
+        }
+        for (int i = 0; i < n; i++) {
+            int fi = find(unf[i]);
+            if(fi==i)continue;
+            road[fi]+=road[i];
+            road[i]=0;
         }
         System.out.println(Arrays.toString(road));
         System.out.println(Arrays.toString(unf));
