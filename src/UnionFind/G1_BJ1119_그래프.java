@@ -1,3 +1,5 @@
+package UnionFind;
+
 import java.io.*;
 import java.util.*;
 
