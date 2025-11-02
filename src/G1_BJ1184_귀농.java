@@ -15,87 +15,103 @@ gpt의 도움 ㅇ => for문을 얼마나 돌릴 것인지 + 누적합 개념 도
 느낀점 : 전처리 과정(ex.누적합)이 중요하다! 데이터를 어떻게 전처리 할것인지 생각해보자.
  */
 public class G1_BJ1184_귀농 {
+    static int[][] pSum;
+    static int n;
+    public static int addSum(int y1, int x1, int y2, int x2) {
+        Point lu = new Point(Math.min(x1, x2), Math.min(y1, y2));
+        Point rd = new Point(Math.max(x1, x2), Math.max(y1, y2));
+        return pSum[rd.y][rd.x]
+                - (lu.y > 0 ? pSum[lu.y - 1][rd.x] : 0)
+                - (lu.x > 0 ? pSum[rd.y][lu.x - 1] : 0)
+                + (lu.y > 0 && lu.x > 0 ? pSum[lu.y - 1][lu.x - 1] : 0);
+    }
+
+    public static Map<Integer, Integer> searchLU(int x, int y){
+        //LeftUp
+        Map<Integer, Integer> lu = new HashMap<>();
+        for (int w = 1; x - w >= 0; w++) {
+            for (int h = 1; y - h >= 0; h++) {
+                int sum = addSum(y - h, x - w, y - 1, x - 1);
+                lu.put(sum, lu.getOrDefault(sum, 0) + 1);   //rd가 lu에 있는지 확인할거임
+            }
+        }
+        return lu;
+    }
+    public static Map<Integer,Integer> searchLD(int x, int y){
+        Map<Integer, Integer> ld = new HashMap<>();
+        for (int w = 1; x - w >= 0; w++) {
+            for (int h = 1; y + h <= n; h++) {
+                int sum = addSum(y + h - 1, x - w, y, x - 1);
+                ld.put(sum, ld.getOrDefault(sum, 0) + 1);
+            }
+        }
+        return ld;
+    }
+    public static Map<Integer,Integer> searchRU(int x, int y){
+        Map<Integer, Integer> ru = new HashMap<>();
+        for (int w = 1; x + w <= n; w++) {
+            for (int h = 1; y - h >= 0; h++) {
+                int sum = addSum(y - h, x + w - 1, y - 1, x);
+                ru.put(sum, ru.getOrDefault(sum, 0) + 1);
+            }
+        }
+        return ru;
+    }
+    public static Map<Integer,Integer> searchRD(int x, int y){
+        Map<Integer, Integer> rd = new HashMap<>();
+        for (int w = 1; x + w <= n; w++) {
+            for (int h = 1; y + h <= n; h++) {
+                int sum = addSum(y + h - 1, x + w - 1, y, x);
+                rd.put(sum, rd.getOrDefault(sum, 0) + 1);
+            }
+        }
+        return rd;
+    }
+
+    public static int findSameRec(int x,int y){
+        int num=0;
+        Map<Integer, Integer> lu = searchLU(x, y);
+        Map<Integer, Integer> ru = searchRU(x, y);
+        Map<Integer, Integer> ld = searchLD(x, y);
+        Map<Integer, Integer> rd = searchRD(x, y);
+        for (Integer i : lu.keySet()) {
+            num+=rd.getOrDefault(i,0)*lu.get(i);
+        }
+        for (Integer i : ld.keySet()) {
+            num+=ru.getOrDefault(i,0)*ld.get(i);
+        }
+        return num;
+    }
+
     public static void main(String[] args) throws IOException {
-        int ans = 0;
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int n = Integer.parseInt(br.readLine());
-        int[][] pSum = new int[n][n];
+        n = Integer.parseInt(br.readLine());
         int[][] land = new int[n][n];
+        pSum = new int[n][n];
         for (int i = 0; i < n; i++) {
-            String[] input = br.readLine().split(" ");
+            int[] input = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
             for (int j = 0; j < n; j++) {
-                land[i][j] = Integer.parseInt(input[j]);
+                land[i][j] = input[j];
             }
         }
-        for (int x = 0; x < n; x++) {
-            for (int y = 0; y < n; y++) {
+        //(0,0)-(x,y) 사각형의 합
+        for (int y = 0; y < n; y++) {
+            for (int x = 0; x < n; x++) {
                 pSum[y][x] = land[y][x];
-                if (y > 0) pSum[y][x] += pSum[y - 1][x];
-                if (x > 0) pSum[y][x] += pSum[y][x - 1];
-                if (y > 0 && x > 0) pSum[y][x] -= pSum[y - 1][x - 1];
+                pSum[y][x] = pSum[y][x]
+                        + (y > 0 ? pSum[y - 1][x] : 0)
+                        + (x > 0 ? pSum[y][x - 1] : 0)
+                        - (x > 0 && y > 0 ? pSum[y-1][x-1] : 0);
             }
         }
-        for (int y = 1; y < n; y++) {
-            for (int x = 1; x < n; x++) {
-                //왼쪽 위
-                HashMap<Integer, Integer> mapLU = new HashMap<>();
-                for (int dx = 1; x - dx >= 0; dx++) {
-                    for (int dy = 1; y - dy >= 0; dy++) {
-                        int x1 = x - dx;
-                        int y1 = y - dy;
-                        int x2 = x - 1;
-                        int y2 = y - 1;
-                        int sum = getSum(pSum, y1, x1, y2, x2);
-                        mapLU.put(sum, mapLU.getOrDefault(sum, 0) + 1);
-                    }
-                }
-
-                //오른쪽 아래
-                for (int dx = 1; x + dx <= n; dx++) {
-                    for (int dy = 1; y + dy <= n; dy++) {
-                        int x1 = x;
-                        int y1 = y;
-                        int x2 = x + dx - 1;
-                        int y2 = y + dy - 1;
-                        int sum = getSum(pSum, y1, x1, y2, x2);
-                        if (mapLU.containsKey(sum)) ans += mapLU.get(sum);
-                    }
-                }
-
-                //오른쪽 위
-                HashMap<Integer, Integer> mapRU = new HashMap<>();
-                for (int dx = 1; x + dx <= n; dx++) {
-                    for (int dy = 1; y - dy >= 0; dy++) {
-                        int x1 = x;
-                        int y1 = y - dy;
-                        int x2 = x + dx - 1;
-                        int y2 = y - 1;
-                        int sum = getSum(pSum, y1, x1, y2, x2);
-                        mapRU.put(sum, mapRU.getOrDefault(sum, 0) + 1);
-                    }
-                }
-
-                //왼족 아래
-                for (int dx = 1; x - dx >= 0; dx++) {
-                    for (int dy = 1; y + dy <= n; dy++) {
-                        int x1 = x - dx;
-                        int y1 = y;
-                        int x2 = x - 1;
-                        int y2 = y + dy - 1;
-                        int sum = getSum(pSum, y1, x1, y2, x2);
-                        if (mapRU.containsKey(sum)) ans += mapRU.get(sum);
-                    }
-                }
+        int ans = 0;
+        //(0,0)~(n+1,n+1) 꼭짓점을 조회 => x,y가 0,n+1일 때는 조회하지 않음
+        //                                  bcs. 대각선 4방향을 조사해야 되는데, 불가능한 좌표이기 때문
+        for (int y = 1; y <= n; y++) {
+            for (int x = 1; x <= n; x++) {
+                ans+=findSameRec(x,y);
             }
         }
         System.out.println(ans);
-    }
-
-    //(y1,x1)이 (y2,x2)보다 좌하단에 위치해야함
-    static int getSum(int[][] psum, int y1, int x1, int y2, int x2) {
-        return psum[y2][x2]
-                - (y1 > 0 ? psum[y1 - 1][x2] : 0)
-                - (x1 > 0 ? psum[y2][x1 - 1] : 0)
-                + (y1 > 0 && x1 > 0 ? psum[y1 - 1][x1 - 1] : 0);
     }
 }
