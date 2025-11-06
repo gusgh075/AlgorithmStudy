@@ -46,19 +46,17 @@ public class Main {
         }
     }
 
-    public static void sInOrder(Node start) {
+    public static void sInOrder(Node root) {
         Stack<Node> s = new Stack<>();
-        s.add(start);
-        Node cur=start;
-        while (cur!=null ||!s.isEmpty()) {
-            while(cur!=null){
-                s.push(cur);
-                cur=cur.left;
+        while (root != null || !s.isEmpty()) {
+            while(root!=null){
+                s.push(root);
+                root=root.left;
             }
-            cur = s.pop();
-            System.out.print(cur.data);
-
-            cur=cur.right;
+            root=s.pop();
+            System.out.print(root.data);
+            //우측으로 이동후 있으면 트리조회, 없으면 찍먹 후 s.pop을 통해 위에 조사하던 좌측 노드로 이동
+            root=root.right;
         }
     }
 
@@ -89,8 +87,11 @@ public class Main {
             Node parent = map.get(input[0]);
             Node left = map.get(input[1]);
             Node right = map.get(input[2]);
-            parent.left = left;
-            parent.right = right;
+            if (left == null) parent.left = right;
+            else {
+                parent.left = left;
+                parent.right = right;
+            }
         }
 //        preOrder(map.get("A"));
 //        System.out.println();
