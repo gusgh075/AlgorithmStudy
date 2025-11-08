@@ -98,9 +98,10 @@ public class Main {
 //        inOrder(map.get("A"));
 //        System.out.println();
 //        postOrder(map.get("A"));
-        sPreOrder(map.get("A"));
-        System.out.println();
-        sInOrder(map.get("A"));
+//        sPreOrder(map.get("A"));
+//        System.out.println();
+//        sInOrder(map.get("A"));
+
 
 
     }
