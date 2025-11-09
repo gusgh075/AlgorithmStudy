@@ -20,20 +20,23 @@ public class tmp {
 
     public static void sPostOrder(Node now) {
         Stack<Node> s = new Stack<>();
-        Node lastRightNode = null;
+        Node lastNode = null; //말단노드 도착여부. 우측조회시 사용
         while (now != null || !s.isEmpty()) {
-            while (now != null) {
+            while (now != null ) {
                 s.push(now);
                 now = now.left;
             }
             now = s.pop();
-            if (now.right != null && lastRightNode!=now.right) {
+            //오른쪽 트리 조회중
+            if (now.right != null && lastNode!=now.right) {
                 s.push(now);
                 now = now.right;
-                lastRightNode = now.right;
-            } else if (lastRightNode != now.right){
+            }
+            //오른쪽 트리 조회가 완료되었다면, 스택 출력중
+            else{
                 System.out.print(now.data);
-                now = now.right;
+                lastNode=now;
+                now=null; //왼쪽트리는 이미 조회가 완료되었으므로, 조회하지 못하게 설정
             }
         }
     }
@@ -41,7 +44,7 @@ public class tmp {
     public static void main(String[] args)throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
-        Map<String,Node> map = new Hashtable<>();
+        Map<String, Node> map = new Hashtable<>();
         for (int i = 0; i < n; i++) {
             String[] input = br.readLine().split(" ");
             if (!input[0].equals(".") && !map.containsKey(input[0])) {
@@ -56,12 +59,10 @@ public class tmp {
             Node parent = map.get(input[0]);
             Node left = map.get(input[1]);
             Node right = map.get(input[2]);
-            if (left == null) parent.left = right;
-            else {
-                parent.left = left;
-                parent.right = right;
-            }
+            parent.left = left;
+            parent.right = right;
         }
+
 //        preOrder(map.get("A"));
 //        System.out.println();
 //        inOrder(map.get("A"));
@@ -71,5 +72,6 @@ public class tmp {
 //        System.out.println();
 //        sInOrder(map.get("A"));
         sPostOrder(map.get("A"));
+        System.out.println();
     }
 }
