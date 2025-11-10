@@ -109,12 +109,8 @@ public class Main {
 //        sPreOrder(map.get("A"));
 //        System.out.println();
 //        sInOrder(map.get("A"));
-<<<<<<< HEAD
 //        System.out.println();
         sPostOrder(map.get("A"));
-=======
-
->>>>>>> 94abf48342d42e5da6c849266b8f94061ead96d4
 
 
     }
