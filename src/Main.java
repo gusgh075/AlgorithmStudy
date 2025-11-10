@@ -46,26 +46,37 @@ public class Main {
         }
     }
 
-    public static void sInOrder(Node root) {
+    public static void sInOrder(Node now) {
         Stack<Node> s = new Stack<>();
-        while (root != null || !s.isEmpty()) {
-            while(root!=null){
-                s.push(root);
-                root=root.left;
+        while (now != null || !s.isEmpty()) {
+            while (now != null) {
+                s.add(now);
+                now = now.left;
             }
-            root=s.pop();
-            System.out.print(root.data);
-            //우측으로 이동후 있으면 트리조회, 없으면 찍먹 후 s.pop을 통해 위에 조사하던 좌측 노드로 이동
-            root=root.right;
+            now = s.pop();
+            System.out.print(now.data);
+            now = now.right;
         }
     }
 
-    public static void sPostOrder(Node start) {
-        Stack<Node> s = new Stack<>();
-        s.add(start);
-        while (!s.isEmpty()) {
-            Node now = s.pop();
 
+    public static void sPostOrder(Node now) {
+        Stack<Node> s = new Stack<>();
+        Node lastVisited = null;
+        while (now != null || !s.isEmpty()) {
+            while (now != null) {
+                s.push(now);
+                now = now.left;
+            }
+            Node peekNode = s.peek();
+            now = s.pop();
+            if (now.right != null) {
+                s.push(now);
+                now = now.right;
+            } else if(now !=null){
+                System.out.print(now.data);
+                now = null;
+            }
         }
     }
 
@@ -87,20 +98,19 @@ public class Main {
             Node parent = map.get(input[0]);
             Node left = map.get(input[1]);
             Node right = map.get(input[2]);
-            if (left == null) parent.left = right;
-            else {
-                parent.left = left;
-                parent.right = right;
-            }
+            parent.left = left;
+            parent.right = right;
         }
 //        preOrder(map.get("A"));
 //        System.out.println();
 //        inOrder(map.get("A"));
 //        System.out.println();
 //        postOrder(map.get("A"));
-        sPreOrder(map.get("A"));
-        System.out.println();
-        sInOrder(map.get("A"));
+//        sPreOrder(map.get("A"));
+//        System.out.println();
+//        sInOrder(map.get("A"));
+//        System.out.println();
+        sPostOrder(map.get("A"));
 
 
     }
