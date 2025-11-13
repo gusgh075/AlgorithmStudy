@@ -1,7 +1,9 @@
+package Tree;
+
 import java.util.*;
 import java.io.*;
 
-public class Main {
+public class S1_BJ1191_트리순회 {
     public static class Node {
         Object data;
         Node left;
@@ -68,13 +70,13 @@ public class Main {
                 s.push(now);
                 now = now.left;
             }
-            Node peekNode = s.peek();
             now = s.pop();
-            if (now.right != null) {
+            if (now.right != null && lastVisited!=now.right) {
                 s.push(now);
                 now = now.right;
-            } else if(now !=null){
+            } else {
                 System.out.print(now.data);
+                lastVisited=now;
                 now = null;
             }
         }
@@ -101,15 +103,15 @@ public class Main {
             parent.left = left;
             parent.right = right;
         }
-//        preOrder(map.get("A"));
+        preOrder(map.get("A"));
 //        System.out.println();
 //        inOrder(map.get("A"));
 //        System.out.println();
 //        postOrder(map.get("A"));
-//        sPreOrder(map.get("A"));
-//        System.out.println();
-//        sInOrder(map.get("A"));
-//        System.out.println();
+        sPreOrder(map.get("A"));
+        System.out.println();
+        sInOrder(map.get("A"));
+        System.out.println();
         sPostOrder(map.get("A"));
 
 
