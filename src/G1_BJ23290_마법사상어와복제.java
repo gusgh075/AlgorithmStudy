@@ -1,3 +1,4 @@
+import java.io.BufferedReader;
 import java.io.IOException;
 
 /*
@@ -38,95 +39,199 @@ import java.io.IOException;
 
 위의 과정을 5번 반복
  */
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class G1_BJ23290_마법사상어와복제 {
-    //fish의 dx,dy값 / 45도 반시계
-    static int[] dfx = {0, -1, -1, -1, 0, 1, 1, 1};
-    static int[] dfy = {1, 1, 0, -1, -1, -1, 0, 1};
-    //shark의 dx,dy값 / 45도 반시계
-    static int[] dsx = {0, -1, 0, 1};
-    static int[] dsy = {1, 0, -1, 0};
-    //자료구조
-    static int[][] smell = new int[4][4];
-    static List<Fish>[][] curFishes = new ArrayList[4][4];
-    static List<Fish>[][] nxtFishes = new ArrayList[4][4];
-    //Fish 클래스
-    public static class Fish {
-        int x;
-        int y;
-        int d;
+  //fish의 dx,dy값 / 45도 반시계
+  static int[] dfx = {-1, -1, 0, 1, 1, 1, 0, -1};
+  static int[] dfy = {0, 1, 1, 1, 0, -1, -1, -1};
+  //shark의 dx,dy값 / 45도 반시계
+  static int[] dsx = {0, -1, 0, 1};
+  static int[] dsy = {1, 0, -1, 0};
+  //자료구조
+  static int fn; //물고기 수
+  static int mn; //상어가 마법 연습한 횟수
+  static Shark shark;
+  static int[][] smell = new int[4][4];
+  static int[][][] curFishes = new int[4][4][8];
+  static int[][][] nxtFishes = new int[4][4][8];
 
-        public Fish(int x, int y, int d) {
-            this.x = x;
-            this.y = y;
-            this.d = d;
+  //Fish 클래스
+  public static class Fish {
+    int x;
+    int y;
+    int n;
+
+    public Fish(int x, int y, int n) {
+      this.x = x;
+      this.y = y;
+      this.n = 1;
+    }
+  }
+
+  //Shark 클래스
+  public static class Shark {
+    int x;
+    int y;
+
+    public Shark(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
+
+  }
+
+  public static void main(String[] args) throws IOException {
+    initialization();
+    for (int i = 0; i < 5 + mn; i++) {
+      //모든 물고기 이동
+      moveFish();
+      //상어 이동
+      moveShark(shark);
+      //물고기를 복제함
+      duplicateFishes();
+      //물고기 냄새 옅어짐
+      reduceSmell();
+    }
+    long ans=0;
+    for (int x = 0; x < 4; x++) {
+      for (int y = 0; y < 4; y++) {
+        for (int d = 0; d < 8; d++) {
+          ans+=curFishes[x][y][d];
         }
+      }
+    }
+    System.out.println(ans);
+  }
 
-        public void rotate() {
-            d = (d + 9) % 8;
+  public static void initialization() throws IOException {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    int[] input = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+    fn = input[0];
+    mn = input[1];
+    for (int i = 0; i < fn; i++) {
+      input = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+      curFishes[input[0] - 1][input[1] - 1][input[2] - 1]++;
+    }
+    input = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+    shark = new Shark(input[0] - 1, input[1] - 1);
+  }
+
+  //curFish -> nxtFish에 저장, 이동방향에 따라
+  public static void moveFish() {
+    for (int x = 0; x < 4; x++) {
+      for (int y = 0; y < 4; y++) {
+        for (int d = 0; d < 8; d++) {
+          int nd = findFishDest(x, y, d);
+          if (nd != -1) {//이동불가가 아니라면
+            int nx = x + dfx[nd];
+            int ny = y + dfy[nd];
+            nxtFishes[nx][ny][nd] = curFishes[x][y][d];
+          } else
+            nxtFishes[x][y][d] = curFishes[x][y][d];
         }
+      }
     }
-    //Shark 클래스
-    public static class Shark {
-        int x;
-        int y;
+  }
 
-        public Shark(int x, int y) {
-            this.x = x;
-            this.y = y;
+  //가능한 이동 방향을 찾음.
+  //불가능 시 -1를 return;
+  public static int findFishDest(int x, int y, int d) {
+    for (int i = 0; i < 8; i++) {
+      int nd = (d - i + 8) % 8;
+      int nx = x + dfx[nd];
+      int ny = y + dfy[nd];
+      /*격자 밖*/
+      if (!(nx < 0 || ny < 0 || nx > 3 || ny > 3
+          /*냄새가 있음*/ || smell[nx][ny] != 0
+          /*상어가 있음*/ || shark.x == nx && shark.y == ny)) return nd;
+    }
+    return -1;
+  }
+
+  public static void moveShark(Shark shark) {
+    Queue<int[]> q = new ArrayDeque<>();
+    for (int i = 0; i < 4; i++) {
+      for (int i1 = 0; i1 < 4; i1++) {
+        for (int i2 = 0; i2 < 4; i2++) {
+          q.add(new int[]{i, i1, i2});
         }
-
+      }
     }
 
-    public static void main(String[] args) throws IOException {
-        Shark shark = new Shark(0,0);
-        for (int x = 0; x < curFishes.length; x++) {
-            for (int y = 0; y < curFishes[x].length; y++) {
-                curFishes[x][y]=new ArrayList<>();
-                nxtFishes[x][y]=new ArrayList<>();
-            }
+    int[] sharkRouteX = new int[3];
+    int[] sharkRouteY = new int[3];
+    int maxF = -1;
+    while (!q.isEmpty()) {
+      int[] now = q.poll();
+      int nx = shark.x;
+      int ny = shark.y;
+      int fn = 0;
+      int[] dieFishx = new int[3];
+      int[] dieFishy = new int[3];
+      for (int i = 0; i < 3; i++) {
+        int d = now[i];
+        nx = nx + dsy[d];
+        ny = ny + dsy[d];
+        if (sharkCanMove(nx, ny)) {
+          dieFishx[i] = nx;
+          dieFishy[i] = ny;
+          for (int f = 0; f < 8; f++) {
+            fn += curFishes[nx][ny][f];
+          }
+        } else break;
+      }
+      if (fn > maxF) {
+        sharkRouteX = dieFishx;
+        sharkRouteY = dieFishy;
+        maxF = fn;
+      }
+    }
+    for (int i = 0; i < 3; i++) {
+      eatFish(sharkRouteX[i],sharkRouteY[i]);
+    }
+
+  }
+
+  //  3. 상어가 3칸 이동. 상하좌우로 인접칸 이동.
+//3-1. 연속해서 이동하는 칸 중 격자 범위 벗어나는 칸 있으면 이동 불가한것
+//3-2. 물고기 있으면 격자에서 제외. 그리고 냄새를 남김
+//3-3. 이동방법은 가장 많은 물고기를 제외시킬 수 있는 경우
+//3-4. 제외할 물고기 개수가 동일한 방법이 존재한다면 사전순으로 앞서는 경우
+//3-5. 상(1), 좌(2), 하(3), 우(4) -> 상상좌(112) < 하우하(343) -> 상상좌(112)가 사전순으로 앞섬
+  public static boolean sharkCanMove(int nx, int ny) {
+    if(nx>=4||ny>=4||nx<0||ny<0) return false;
+    return true;
+  }
+
+  private static void duplicateFishes() {
+    for (int x = 0; x < 4; x++) {
+      for (int y = 0; y < 4; y++) {
+        for (int d = 0; d < 8; d++) {
+          curFishes[x][y][d]+=nxtFishes[x][y][d];
+          nxtFishes[x][y][d]=0;
         }
-
-        for (int i = 0; i < 5; i++) {
-            //모든 물고기 이동
-            for(int x=0;x<4;x++){
-                for(int y=0;y<4;y++){
-                    for (Fish fish : curFishes[x][y]) {
-                        moveFish(fish);
-                    }
-                }
-            }
-            //상어 이동
-            moveShark(shark);
-            //물고기를 복제함
-            duplicateFishes();
-            //물고기 냄새 옅어짐
-            reduceSmell();
-        }
+      }
     }
-    public static void moveFish(Fish fish){
+  }
 
+  private static void eatFish(int x, int y) {
+    for (int d = 0; d < 8; d++) {
+      curFishes[x][y][d]=0;
+      nxtFishes[x][y][d]=0;
     }
-    public static void moveShark(Shark shark){
-        eatFish(1,1);
-        smell[1][1]=3;
-    }
+    shark.x=x;
+    shark.y=y;
+    smell[x][y]=3;
+  }
 
-    private static void duplicateFishes() {
-
+  private static void reduceSmell() {
+    for (int x = 0; x < 4; x++) {
+      for (int y = 0; y < 4; y++) {
+        if (smell[x][y] != 0)
+          smell[x][y]--;
+      }
     }
-
-    private static void eatFish(int x, int y) {
-        smell[x][y]=3;
-    }
-
-    private static void reduceSmell(){
-        for (int x = 0; x < 4; x++) {
-            for(int y=0;y<4;y++){
-                if(smell[x][y]!=0)
-                    smell[x][y]--;
-            }
-        }
-    }
+  }
 }
