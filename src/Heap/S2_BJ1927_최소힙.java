@@ -12,8 +12,11 @@ public class S2_BJ1927_최소힙 {
     PriorityQueue<Long> pq = new PriorityQueue<>();
     for (int i = 0; i < n; i++) {
       Long input = Long.parseLong(br.readLine());
-      if(input )
-      pq.offer(input);
+      if(input ==0L) {
+        Long poll = pq.poll();
+        System.out.println(poll==null? 0:poll);
+      }
+      else pq.offer(input);
     }
   }
 }
